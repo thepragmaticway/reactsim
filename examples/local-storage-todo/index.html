@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reactsim Local Storage Todo</title>
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="todo-panel">
+        <div class="heading">
+          <div>
+            <h1>Local Storage Todo</h1>
+            <p>Todos are rendered by Reactsim and persisted with useEffect after domRenderer commits.</p>
+          </div>
+          <button id="clear-storage" class="secondary">Reset Storage</button>
+        </div>
+
+        <div id="todo-root" class="todo-root"></div>
+      </section>
+
+      <aside class="monitor-panel">
+        <div class="heading compact">
+          <div>
+            <h2>Effect Timeline</h2>
+            <p>Watch state updates, virtual diffs, DOM commits, and localStorage effects.</p>
+          </div>
+          <span id="event-count" class="meter">0 events</span>
+        </div>
+        <ol id="timeline" class="timeline"></ol>
+      </aside>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

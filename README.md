@@ -62,6 +62,18 @@ Open:
 http://127.0.0.1:4174/examples/tic-tac-toe/
 ```
 
+## Run The Local Storage Todo Example
+
+```powershell
+npm run example:local-storage-todo
+```
+
+Open:
+
+```text
+http://127.0.0.1:4175/examples/local-storage-todo/
+```
+
 ## Core Reading Order
 
 1. `src/core/eventBus.js`

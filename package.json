@@ -17,7 +17,8 @@
     "example": "python -m http.server 4173 --bind 127.0.0.1",
     "example:lab": "python -m http.server 4173 --bind 127.0.0.1",
     "example:tic-tac-toe": "python -m http.server 4174 --bind 127.0.0.1",
-    "check": "node --check src/index.js && node --check src/core/index.js && node --check examples/lab/src/main.js && node --check examples/tic-tac-toe/src/main.js",
+    "example:local-storage-todo": "python -m http.server 4175 --bind 127.0.0.1",
+    "check": "node --check src/index.js && node --check src/core/index.js && node --check examples/lab/src/main.js && node --check examples/tic-tac-toe/src/main.js && node --check examples/local-storage-todo/src/main.js",
     "test": "node tests/core.test.js"
   },
   "keywords": [

@@ -8,7 +8,9 @@ export function createStateHook({ bus, history, requestRender }) {
   let slots = [];
 
   function useStateAt(index, initialValue) {
-    if (slots[index] === undefined) slots[index] = initialValue;
+    if (slots[index] === undefined) {
+      slots[index] = typeof initialValue === "function" ? initialValue() : initialValue;
+    }
 
     function setState(nextValue) {
       const previous = slots[index];

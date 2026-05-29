@@ -99,6 +99,7 @@ assert.deepEqual(vnode, {
 
 let actions = {};
 let effectLog = [];
+let lazyInitializers = 0;
 
 function Child() {
   const [label, setLabel] = useState("ready");
@@ -111,7 +112,10 @@ function Child() {
 }
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(() => {
+    lazyInitializers += 1;
+    return 0;
+  });
   actions.increment = () => setCount((value) => value + 1);
   useEffect(() => {
     effectLog.push("mount-only");
@@ -131,6 +135,7 @@ const appNode = root.firstChild;
 assert.equal(appNode.type, "div");
 assert.equal(appNode.childNodes[0].textContent, "Count 1");
 assert.equal(appNode.childNodes[1].childNodes[0].textContent, "done");
+assert.equal(lazyInitializers, 1);
 assert(runtime.history.all().some((event) => event.type === "virtual:diff"));
 assert(runtime.history.all().some((event) => event.type.startsWith("dom:")));
 assert.deepEqual(effectLog.slice(0, 4), ["mount-only", "label:ready", "cleanup:ready", "label:done"]);
