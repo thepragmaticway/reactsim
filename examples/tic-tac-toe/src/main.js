@@ -1,4 +1,4 @@
-import { createComponentRuntime, createElement, useState } from "../../../src/index.js";
+import { createComponentRuntime, createElement, useEffect, useState } from "../../../src/index.js";
 
 const lines = [
   [0, 1, 2],
@@ -34,6 +34,14 @@ function App() {
   const winner = calculateWinner(squares);
   const isDraw = !winner && squares.every(Boolean);
   const current = xIsNext ? "X" : "O";
+
+  useEffect(() => {
+    document.title = winner ? `${winner.player} wins - Reactsim Tic Tac Toe` : "Reactsim Tic Tac Toe";
+
+    return () => {
+      document.title = "Reactsim Tic Tac Toe";
+    };
+  }, [winner?.player]);
 
   actions.play = (index) => {
     if (squares[index] || winner) return;
@@ -90,13 +98,15 @@ function Square({ value, index, isWinner }) {
 }
 
 function pushTimeline(event) {
-  if (!["state:update", "virtual:diff"].includes(event.type) && !event.type.startsWith("dom:")) return;
+  if (!["state:update", "virtual:diff"].includes(event.type) && !event.type.startsWith("dom:") && !event.type.startsWith("effect:")) {
+    return;
+  }
 
   eventTotal += 1;
   eventCount.textContent = `${eventTotal} events`;
 
   const item = document.createElement("li");
-  item.className = `timeline-item ${event.type.startsWith("dom:") ? "commit" : "render"}`;
+  item.className = `timeline-item ${timelineKind(event)}`;
   item.innerHTML = `
     <span>${event.type}</span>
     <small>${describeEvent(event)}</small>
@@ -111,8 +121,17 @@ function pushTimeline(event) {
 function describeEvent(event) {
   if (event.type === "state:update") return `slot ${event.slot} scheduled a render`;
   if (event.type === "virtual:diff") return `${event.patches.length} patch${event.patches.length === 1 ? "" : "es"} calculated`;
+  if (event.type === "effect:run") return `effect slot ${event.slot} ran after commit`;
+  if (event.type === "effect:cleanup") return `effect slot ${event.slot} cleaned up`;
+  if (event.type === "effect:warning") return event.message;
   if (event.patch) return `${event.patch.op} at ${event.patch.path}`;
   return event.phase || "";
+}
+
+function timelineKind(event) {
+  if (event.type.startsWith("dom:")) return "commit";
+  if (event.type.startsWith("effect:")) return "effect";
+  return "render";
 }
 
 const runtime = createComponentRuntime(App, { root: gameRoot });

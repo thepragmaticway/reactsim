@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { createComponentRuntime, createElement, useState } from "../src/index.js";
+import { createComponentRuntime, createElement, useEffect, useState } from "../src/index.js";
 import { createDomRenderer, createHooksState, createVirtualDom } from "../src/core/index.js";
 
 class FakeText {
@@ -98,16 +98,25 @@ assert.deepEqual(vnode, {
 });
 
 let actions = {};
+let effectLog = [];
 
 function Child() {
   const [label, setLabel] = useState("ready");
   actions.setLabel = setLabel;
+  useEffect(() => {
+    effectLog.push(`label:${label}`);
+    return () => effectLog.push(`cleanup:${label}`);
+  }, [label]);
   return createElement("span", {}, label);
 }
 
 function App() {
   const [count, setCount] = useState(0);
   actions.increment = () => setCount((value) => value + 1);
+  useEffect(() => {
+    effectLog.push("mount-only");
+    return () => effectLog.push("cleanup:mount-only");
+  }, []);
   return createElement("div", { id: "root" }, `Count ${count}`, Child());
 }
 
@@ -124,10 +133,29 @@ assert.equal(appNode.childNodes[0].textContent, "Count 1");
 assert.equal(appNode.childNodes[1].childNodes[0].textContent, "done");
 assert(runtime.history.all().some((event) => event.type === "virtual:diff"));
 assert(runtime.history.all().some((event) => event.type.startsWith("dom:")));
+assert.deepEqual(effectLog.slice(0, 4), ["mount-only", "label:ready", "cleanup:ready", "label:done"]);
+assert.equal(effectLog.filter((entry) => entry === "mount-only").length, 1);
+assert(runtime.history.all().some((event) => event.type === "effect:run"));
+assert(runtime.history.all().some((event) => event.type === "effect:cleanup"));
+
+runtime.reset();
+assert(effectLog.includes("cleanup:mount-only"));
+assert(effectLog.includes("cleanup:done"));
 
 assert.throws(() => useState("outside render"), /only be called while Reactsim is rendering/);
+assert.throws(() => useEffect(() => {}), /only be called while Reactsim is rendering/);
 assert.equal(typeof createDomRenderer, "function");
 assert.equal(typeof createHooksState, "function");
 assert.equal(typeof createVirtualDom, "function");
+
+function AsyncEffectApp() {
+  useEffect(async () => {});
+  return createElement("p", {}, "async effect");
+}
+
+const asyncRoot = new FakeElement("root");
+const asyncRuntime = createComponentRuntime(AsyncEffectApp, { root: asyncRoot });
+asyncRuntime.mount();
+assert(asyncRuntime.history.all().some((event) => event.type === "effect:warning"));
 
 console.log("core tests passed");

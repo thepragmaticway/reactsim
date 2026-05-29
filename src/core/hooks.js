@@ -8,10 +8,10 @@ export function clearCurrentHooksState() {
   currentHooksState = null;
 }
 
-export function useState(initialValue) {
+export function getCurrentHooksState(hookName) {
   if (!currentHooksState) {
-    throw new Error("useState can only be called while Reactsim is rendering a component.");
+    throw new Error(`${hookName} can only be called while Reactsim is rendering a component.`);
   }
 
-  return currentHooksState.useState(initialValue);
+  return currentHooksState;
 }

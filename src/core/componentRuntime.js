@@ -45,6 +45,7 @@ export function createComponentRuntime(rootComponent, { root } = {}) {
       patchCount: patches.length
     });
     history.record(endEvent);
+    hooksState.flushEffects();
   }
 
   function requestRender() {
@@ -62,9 +63,9 @@ export function createComponentRuntime(rootComponent, { root } = {}) {
   function reset() {
     renderCount = 0;
     scheduled = false;
+    history.clear();
     hooksState.reset();
     virtualDom.reset();
-    history.clear();
     mount();
   }
 

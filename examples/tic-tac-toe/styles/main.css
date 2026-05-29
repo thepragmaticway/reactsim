@@ -9,6 +9,7 @@
   --win: #15915e;
   --win-soft: #dff8eb;
   --commit: #0f766e;
+  --effect: #d97706;
   --render: #7c3aed;
   --shadow: 0 20px 55px rgba(23, 32, 51, 0.1);
 }
@@ -204,6 +205,10 @@ h2 {
 
 .timeline-item.commit {
   border-left-color: var(--commit);
+}
+
+.timeline-item.effect {
+  border-left-color: var(--effect);
 }
 
 .timeline-item span {

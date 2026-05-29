@@ -14,10 +14,14 @@ npm install reactsim
 Use the beginner-facing API:
 
 ```js
-import { createComponentRuntime, createElement, useState } from "reactsim";
+import { createComponentRuntime, createElement, useEffect, useState } from "reactsim";
 
 function Counter() {
   const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log("domRenderer committed the button");
+  }, [count]);
 
   return createElement(
     "button",
@@ -65,9 +69,11 @@ http://127.0.0.1:4174/examples/tic-tac-toe/
 3. `src/core/createElement.js`
 4. `src/core/hooks.js`
 5. `src/core/hooksState.js`
-6. `src/core/componentRuntime.js`
-7. `src/core/virtualDom.js`
-8. `src/core/domRenderer.js`
+6. `src/core/useState.js`
+7. `src/core/useEffect.js`
+8. `src/core/componentRuntime.js`
+9. `src/core/virtualDom.js`
+10. `src/core/domRenderer.js`
 
 ## Simplified React-Like Workflow
 
@@ -102,3 +108,50 @@ function TodoForm() {
 The runtime sets the current hook context before calling the root component and clears it after rendering. This approximates React's hook dispatcher idea in a beginner-readable way.
 
 This implementation keeps one hook slot list for the whole render traversal, so hook call order must stay stable. Do not call hooks conditionally.
+
+## Effect Model
+
+`useEffect` runs after `domRenderer` commits real DOM updates:
+
+```js
+import { useEffect } from "reactsim";
+
+function App() {
+  useEffect(() => {
+    document.title = "Rendered by Reactsim";
+
+    return () => {
+      document.title = "Reactsim";
+    };
+  }, []);
+}
+```
+
+Supported dependency forms:
+
+```js
+useEffect(fn);        // after every commit
+useEffect(fn, []);    // after first commit
+useEffect(fn, [value]); // when value changes
+```
+
+Do not pass an async function directly to `useEffect`. Start async work inside the effect body and return only a cleanup function:
+
+```js
+useEffect(() => {
+  let cancelled = false;
+
+  async function load() {
+    const data = await fetchData();
+    if (!cancelled) setData(data);
+  }
+
+  load();
+
+  return () => {
+    cancelled = true;
+  };
+}, []);
+```
+
+If an effect callback returns a Promise, Reactsim emits `effect:warning` and ignores it as cleanup. This simplified `useEffect` runs synchronously after commit; real React schedules effects with more nuance.

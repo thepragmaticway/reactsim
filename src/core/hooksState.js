@@ -1,5 +1,9 @@
+import { createEffectHook } from "./useEffect.js";
+import { createStateHook } from "./useState.js";
+
 export function createHooksState({ bus, history, requestRender }) {
-  let slots = [];
+  const stateHook = createStateHook({ bus, history, requestRender });
+  const effectHook = createEffectHook({ bus, history });
   let cursor = 0;
 
   function beginRender() {
@@ -7,38 +11,32 @@ export function createHooksState({ bus, history, requestRender }) {
   }
 
   function useState(initialValue) {
-    const index = cursor;
-    if (slots[index] === undefined) slots[index] = initialValue;
+    return stateHook.useStateAt(nextHookIndex(), initialValue);
+  }
 
-    function setState(nextValue) {
-      const previous = slots[index];
-      const next = typeof nextValue === "function" ? nextValue(previous) : nextValue;
-      if (Object.is(previous, next)) return;
+  function useEffect(callback, deps) {
+    effectHook.useEffectAt(nextHookIndex(), callback, deps);
+  }
 
-      slots = slots.map((value, slotIndex) => (slotIndex === index ? next : value));
-      const event = bus.emit("state:update", {
-        source: "reactsim",
-        phase: "schedule",
-        slot: index,
-        previous,
-        next
-      });
-      history.record(event);
-      requestRender();
-    }
-
-    cursor += 1;
-    return [slots[index], setState];
+  function flushEffects() {
+    effectHook.flushEffects();
   }
 
   function reset() {
-    slots = [];
+    effectHook.reset();
+    stateHook.reset();
     cursor = 0;
   }
 
   function getSlots() {
-    return [...slots];
+    return stateHook.getSlots();
   }
 
-  return { beginRender, useState, reset, getSlots };
+  return { beginRender, flushEffects, useEffect, useState, reset, getSlots };
+
+  function nextHookIndex() {
+    const index = cursor;
+    cursor += 1;
+    return index;
+  }
 }
