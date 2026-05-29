@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reactsim Learning Lab</title>
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div>
+        <h1>Reactsim Learning Lab</h1>
+        <p>Step-by-step exercises for understanding direct DOM mutation, functional composition, state, reconciliation, and effects.</p>
+      </div>
+      <nav>
+        <a href="#direct-vs-reconcile">Compare</a>
+        <a href="#direct-todo">Direct DOM</a>
+        <a href="#composition">Composition</a>
+        <a href="#reactsim-static">Reactsim</a>
+        <a href="#state">State</a>
+        <a href="#effect">Effects</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="direct-vs-reconcile" class="lesson">
+        <div class="lesson-copy">
+          <span class="step">1</span>
+          <h2>Ad hoc DOM mutation vs reconciled desired DOM</h2>
+          <p>Direct modules can each mutate the shared DOM tree whenever they want. Reactsim centralizes change through state, component output, virtual DOM diffing, and `domRenderer` commits.</p>
+        </div>
+        <div class="diagram-grid">
+          <div class="diagram dirty">
+            <h3>Ad hoc direct DOM</h3>
+            <div class="flow">
+              <span>Form function</span>
+              <span>List function</span>
+              <span>Item function</span>
+              <strong>Shared DOM tree</strong>
+            </div>
+          </div>
+          <div class="diagram clean">
+            <h3>Reactsim flow</h3>
+            <div class="flow">
+              <span>State change</span>
+              <span>Component functions return desired view</span>
+              <span>virtualDom calculates patches</span>
+              <strong>domRenderer commits DOM</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="direct-todo" class="lesson two-col">
+        <div class="lesson-copy">
+          <span class="step">2</span>
+          <h2>Direct todo: each function updates DOM itself</h2>
+          <p>This version does not have one render function that clears and rebuilds everything. Each action directly touches the DOM node it cares about.</p>
+          <div id="direct-todo-view" class="demo-box"></div>
+        </div>
+        <pre class="code"><code id="code-direct-todo"></code></pre>
+      </section>
+
+      <section id="composition" class="lesson two-col">
+        <div class="lesson-copy">
+          <span class="step">3</span>
+          <h2>Functional composition: input in, output returned</h2>
+          <p>Before state, hooks, or DOM, a component idea is just function composition. Data goes in. A view description comes out.</p>
+          <pre class="json-view" id="composition-json"></pre>
+          <div class="output-preview" id="composition-output"></div>
+        </div>
+        <pre class="code"><code id="code-composition"></code></pre>
+      </section>
+
+      <section id="reactsim-static" class="lesson two-col">
+        <div class="lesson-copy">
+          <span class="step">4</span>
+          <h2>The same composition in Reactsim</h2>
+          <p>Reactsim components return virtual DOM objects with `createElement()`. The runtime diffs the desired tree and `domRenderer` commits real DOM.</p>
+          <div id="static-reactsim-root" class="demo-box"></div>
+        </div>
+        <pre class="code"><code id="code-reactsim-static"></code></pre>
+      </section>
+
+      <section id="state" class="lesson two-col">
+        <div class="lesson-copy">
+          <span class="step">5</span>
+          <h2>Props + private state decide component output</h2>
+          <p>A function processes input props plus remembered hook state, then returns output. If props or state change, the component function runs again and returns new output.</p>
+          <div id="counter-root" class="demo-box"></div>
+        </div>
+        <pre class="code"><code id="code-counter"></code></pre>
+      </section>
+
+      <section id="todo-state" class="lesson two-col">
+        <div class="lesson-copy">
+          <span class="step">6</span>
+          <h2>Reactsim todo keeps list state</h2>
+          <p>The todo list lives in `useState`. Adding an item updates state, reruns the component functions, diffs the new desired list, and commits only the needed DOM work.</p>
+          <div id="state-todo-root" class="demo-box"></div>
+        </div>
+        <pre class="code"><code id="code-state-todo"></code></pre>
+      </section>
+
+      <section id="effect" class="lesson two-col">
+        <div class="lesson-copy">
+          <span class="step">7</span>
+          <h2>Effects are for external systems</h2>
+          <p>Component functions should mostly process input plus state and return output. `useEffect` is the special place for side effects like document title, localStorage, or API calls.</p>
+          <div id="effect-root" class="demo-box"></div>
+        </div>
+        <pre class="code"><code id="code-effect"></code></pre>
+      </section>
+
+      <section id="full-storage-todo" class="lesson two-col">
+        <div class="lesson-copy">
+          <span class="step">8</span>
+          <h2>Full todo initialized and persisted with localStorage</h2>
+          <p>This combines lazy state initialization and an effect. Initial state reads localStorage once. After every todo change, the effect writes the latest list back.</p>
+          <div id="storage-todo-root" class="demo-box"></div>
+        </div>
+        <pre class="code"><code id="code-storage-todo"></code></pre>
+      </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
