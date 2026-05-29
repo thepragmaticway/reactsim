@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reactsim</title>
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <h1>Reactsim</h1>
+        <p>
+          A pure HTML, CSS, and JavaScript simulator for comparing direct DOM mutation with a simplified
+          React-like state, render, reconcile, and commit workflow.
+        </p>
+      </div>
+      <button id="reset-all" class="secondary">Reset Lab</button>
+    </header>
+
+    <main>
+      <section class="comparison">
+        <article class="panel dirty-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Direct DOM Mutation</h2>
+              <p>Each handler changes browser DOM immediately and rebuilds more than it needs.</p>
+            </div>
+            <span class="tag dirty">dirty mutation</span>
+          </div>
+          <div id="dom-app" class="app-slot"></div>
+        </article>
+
+        <article class="panel clean-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>React-like Simulation</h2>
+              <p>Events update state, functions compose desired UI, then the simulator patches only changes.</p>
+            </div>
+            <span class="tag clean">clean desired state</span>
+          </div>
+          <div id="react-preview" class="app-slot"></div>
+        </article>
+      </section>
+
+      <section class="flow-strip">
+        <div class="flow-card dirty">
+          <strong>Direct path</strong>
+          <span>event -> handler -> real DOM writes -> scattered browser mutations</span>
+        </div>
+        <div class="flow-card clean">
+          <strong>Reactsim path</strong>
+          <span>event -> state -> function calls -> desired tree -> diff -> simulated DOM patches</span>
+        </div>
+      </section>
+
+      <section class="code-grid">
+        <article class="panel code-panel dirty-panel">
+          <div class="panel-heading compact">
+            <div>
+              <h2>DOM App Code</h2>
+              <p>Imperative handlers rebuild browser DOM directly.</p>
+            </div>
+            <span class="tag dirty">domTodoApp.js</span>
+          </div>
+          <pre class="code-editor"><code id="dom-code">Loading source...</code></pre>
+        </article>
+
+        <article class="panel code-panel clean-panel">
+          <div class="panel-heading compact">
+            <div>
+              <h2>Reactsim App Code</h2>
+              <p>State setters trigger functional rendering and simulated commits.</p>
+            </div>
+            <span class="tag clean">reactTodoApp.js</span>
+          </div>
+          <pre class="code-editor"><code id="react-code">Loading source...</code></pre>
+        </article>
+      </section>
+
+      <section class="monitors">
+        <article class="panel">
+          <div class="panel-heading compact">
+            <h2>Real DOM Tree</h2>
+            <span id="dom-count" class="meter">0 events</span>
+          </div>
+          <div id="real-dom-tree" class="tree-shell"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading compact">
+            <h2>Physical DOM Sim Tree</h2>
+            <span id="sim-count" class="meter">0 events</span>
+          </div>
+          <div id="sim-dom-tree" class="tree-shell"></div>
+        </article>
+      </section>
+
+      <section class="panel timeline-panel">
+        <div class="panel-heading compact">
+          <h2>Event Timeline</h2>
+          <p>Red entries come from direct mutation. Green and blue entries come from Reactsim scheduling, rendering, diffing, and simulated commits.</p>
+        </div>
+        <ol id="timeline" class="timeline"></ol>
+      </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
