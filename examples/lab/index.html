@@ -34,8 +34,8 @@
         <article class="panel clean-panel">
           <div class="panel-heading">
             <div>
-              <h2>React-like Simulation</h2>
-              <p>Events update state, functions compose desired UI, then the simulator patches only changes.</p>
+              <h2>Lightweight React-like Renderer</h2>
+              <p>Events update state, functions compose desired UI, then domRenderer patches real DOM.</p>
             </div>
             <span class="tag clean">clean desired state</span>
           </div>
@@ -50,7 +50,7 @@
         </div>
         <div class="flow-card clean">
           <strong>Reactsim path</strong>
-          <span>event -> state -> function calls -> desired tree -> diff -> simulated DOM patches</span>
+          <span>event -> state -> function calls -> desired tree -> diff -> domRenderer patches</span>
         </div>
       </section>
 
@@ -70,7 +70,7 @@
           <div class="panel-heading compact">
             <div>
               <h2>Reactsim App Code</h2>
-              <p>State setters trigger functional rendering and simulated commits.</p>
+              <p>State setters trigger functional rendering and real DOM commits.</p>
             </div>
             <span class="tag clean">reactTodoApp.js</span>
           </div>
@@ -89,17 +89,17 @@
 
         <article class="panel">
           <div class="panel-heading compact">
-            <h2>Physical DOM Sim Tree</h2>
-            <span id="sim-count" class="meter">0 events</span>
+            <h2>Reactsim DOM Tree</h2>
+            <span id="renderer-count" class="meter">0 events</span>
           </div>
-          <div id="sim-dom-tree" class="tree-shell"></div>
+          <div id="renderer-dom-tree" class="tree-shell"></div>
         </article>
       </section>
 
       <section class="panel timeline-panel">
         <div class="panel-heading compact">
           <h2>Event Timeline</h2>
-          <p>Red entries come from direct mutation. Green and blue entries come from Reactsim scheduling, rendering, diffing, and simulated commits.</p>
+          <p>Red entries come from direct mutation. Green and blue entries come from Reactsim scheduling, rendering, diffing, and renderer commits.</p>
         </div>
         <ol id="timeline" class="timeline"></ol>
       </section>

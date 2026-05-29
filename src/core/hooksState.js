@@ -1,4 +1,4 @@
-export function createStateSim({ bus, history, requestRender }) {
+export function createHooksState({ bus, history, requestRender }) {
   let slots = [];
   let cursor = 0;
 

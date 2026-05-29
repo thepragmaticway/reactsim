@@ -1,23 +1,23 @@
-import { createDomTodoApp } from "./lab/domTodoApp.js";
-import { createReactTodoApp } from "./lab/reactTodoApp.js";
-import { createRealDomMonitor } from "./lab/monitors/realDomMonitor.js";
-import { createSimDomMonitor } from "./lab/monitors/simDomMonitor.js";
-import { createTimelineMonitor } from "./lab/monitors/timelineMonitor.js";
+import { createDomTodoApp } from "./domTodoApp.js";
+import { createReactTodoApp } from "./reactTodoApp.js";
+import { createRealDomMonitor } from "./monitors/realDomMonitor.js";
+import { createRendererDomMonitor } from "./monitors/rendererDomMonitor.js";
+import { createTimelineMonitor } from "./monitors/timelineMonitor.js";
 
 const domRoot = document.querySelector("#dom-app");
 const reactPreviewRoot = document.querySelector("#react-preview");
 const realTreeRoot = document.querySelector("#real-dom-tree");
-const simTreeRoot = document.querySelector("#sim-dom-tree");
+const rendererTreeRoot = document.querySelector("#renderer-dom-tree");
 const timelineRoot = document.querySelector("#timeline");
 const domCount = document.querySelector("#dom-count");
-const simCount = document.querySelector("#sim-count");
+const rendererCount = document.querySelector("#renderer-count");
 const resetButton = document.querySelector("#reset-all");
 const domCode = document.querySelector("#dom-code");
 const reactCode = document.querySelector("#react-code");
 
 const timeline = createTimelineMonitor(timelineRoot);
 let domEvents = 0;
-let simEvents = 0;
+let rendererEvents = 0;
 
 function pushDomEvent(event) {
   domEvents += 1;
@@ -26,8 +26,8 @@ function pushDomEvent(event) {
 }
 
 function pushSimEvent(event) {
-  simEvents += 1;
-  simCount.textContent = `${simEvents} events`;
+  rendererEvents += 1;
+  rendererCount.textContent = `${rendererEvents} events`;
   timeline.push(event);
 }
 
@@ -38,13 +38,13 @@ const realMonitor = createRealDomMonitor({
   onMutation: pushDomEvent
 });
 
-const reactApp = createReactTodoApp();
+const reactApp = createReactTodoApp(reactPreviewRoot);
 reactApp.runtime.bus.on("*", pushSimEvent);
 
-const simMonitor = createSimDomMonitor({
+const rendererMonitor = createRendererDomMonitor({
   runtime: reactApp.runtime,
   previewRoot: reactPreviewRoot,
-  treeRoot: simTreeRoot
+  treeRoot: rendererTreeRoot
 });
 
 reactPreviewRoot.addEventListener("click", (event) => {
@@ -77,21 +77,20 @@ reactPreviewRoot.addEventListener("keydown", (event) => {
 
 resetButton.addEventListener("click", () => {
   domEvents = 0;
-  simEvents = 0;
+  rendererEvents = 0;
   domCount.textContent = "0 events";
-  simCount.textContent = "0 events";
+  rendererCount.textContent = "0 events";
   timeline.clear();
   directApp.reset();
   reactApp.runtime.reset();
   realMonitor.renderTree();
-  simMonitor.renderPreview();
-  simMonitor.renderTree();
+  rendererMonitor.renderTree();
 });
 
 reactApp.runtime.mount();
 
-loadCodeEditor("./src/lab/domTodoApp.js", domCode);
-loadCodeEditor("./src/lab/reactTodoApp.js", reactCode);
+loadCodeEditor("./src/domTodoApp.js", domCode);
+loadCodeEditor("./src/reactTodoApp.js", reactCode);
 
 async function loadCodeEditor(path, target) {
   try {

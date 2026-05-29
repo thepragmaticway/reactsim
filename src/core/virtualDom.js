@@ -46,7 +46,7 @@ function diffNode(oldNode, newNode, path, patches) {
   }
 }
 
-export function createVirtualDomSim({ bus, history, physicalDom }) {
+export function createVirtualDom({ bus, history, domRenderer }) {
   let currentTree = null;
 
   function render(nextTree) {
@@ -62,7 +62,7 @@ export function createVirtualDomSim({ bus, history, physicalDom }) {
     });
     history.record(event);
 
-    physicalDom.applyPatches(patches);
+    domRenderer.applyPatches(patches);
     currentTree = nextTree;
     return patches;
   }
@@ -73,7 +73,7 @@ export function createVirtualDomSim({ bus, history, physicalDom }) {
 
   function reset() {
     currentTree = null;
-    physicalDom.reset();
+    domRenderer.reset();
   }
 
   return { render, getTree, reset };

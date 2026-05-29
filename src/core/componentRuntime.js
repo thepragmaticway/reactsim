@@ -1,22 +1,23 @@
 import { createEventBus } from "./eventBus.js";
 import { createHistory } from "./history.js";
-import { createPhysicalDomSim } from "./physicalDomSim.js";
-import { createVirtualDomSim } from "./virtualDomSim.js";
-import { createStateSim } from "./stateSim.js";
+import { createDomRenderer } from "./domRenderer.js";
+import { createVirtualDom } from "./virtualDom.js";
+import { createHooksState } from "./hooksState.js";
+import { clearCurrentHooksState, setCurrentHooksState } from "./hooks.js";
 
-export function createComponentRuntime(rootComponent) {
+export function createComponentRuntime(rootComponent, { root } = {}) {
   const bus = createEventBus();
   const history = createHistory();
-  const physicalDom = createPhysicalDomSim({ bus, history });
-  const virtualDom = createVirtualDomSim({ bus, history, physicalDom });
+  const domRenderer = createDomRenderer({ root, bus, history });
+  const virtualDom = createVirtualDom({ bus, history, domRenderer });
 
   let scheduled = false;
   let renderCount = 0;
-  let stateSim;
+  let hooksState;
 
   function render(reason = "manual") {
     scheduled = false;
-    stateSim.beginRender();
+    hooksState.beginRender();
 
     const startEvent = bus.emit("runtime:render:start", {
       source: "reactsim",
@@ -26,7 +27,14 @@ export function createComponentRuntime(rootComponent) {
     });
     history.record(startEvent);
 
-    const desiredTree = rootComponent({ useState: stateSim.useState });
+    let desiredTree;
+    setCurrentHooksState(hooksState);
+    try {
+      desiredTree = rootComponent();
+    } finally {
+      clearCurrentHooksState();
+    }
+
     const patches = virtualDom.render(desiredTree);
     renderCount += 1;
 
@@ -45,7 +53,7 @@ export function createComponentRuntime(rootComponent) {
     queueMicrotask(() => render("state update"));
   }
 
-  stateSim = createStateSim({ bus, history, requestRender });
+  hooksState = createHooksState({ bus, history, requestRender });
 
   function mount() {
     render("mount");
@@ -54,7 +62,7 @@ export function createComponentRuntime(rootComponent) {
   function reset() {
     renderCount = 0;
     scheduled = false;
-    stateSim.reset();
+    hooksState.reset();
     virtualDom.reset();
     history.clear();
     mount();
@@ -66,8 +74,7 @@ export function createComponentRuntime(rootComponent) {
     mount,
     reset,
     render,
-    getPhysicalTree: physicalDom.getTree,
     getVirtualTree: virtualDom.getTree,
-    getStateSlots: stateSim.getSlots
+    getStateSlots: hooksState.getSlots
   };
 }

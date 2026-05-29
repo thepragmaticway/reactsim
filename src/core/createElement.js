@@ -1,4 +1,4 @@
-export function h(type, props = {}, ...children) {
+export function createElement(type, props = {}, ...children) {
   return {
     type,
     props: props || {},

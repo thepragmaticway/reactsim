@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reactsim Tic Tac Toe</title>
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="game-panel">
+        <div class="heading">
+          <div>
+            <h1>Tic Tac Toe</h1>
+            <p>Built with Reactsim state, component functions, virtual DOM diffing, and domRenderer commits.</p>
+          </div>
+          <button id="reset-game" class="secondary">Reset</button>
+        </div>
+
+        <div id="game-root" class="game-root"></div>
+      </section>
+
+      <aside class="monitor-panel">
+        <div class="heading compact">
+          <div>
+            <h2>Renderer Timeline</h2>
+            <p>Subscriptions explain commits; domRenderer owns the actual game DOM.</p>
+          </div>
+          <span id="event-count" class="meter">0 events</span>
+        </div>
+        <ol id="timeline" class="timeline"></ol>
+      </aside>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

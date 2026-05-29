@@ -1,0 +1,31 @@
+{
+  "name": "reactsim",
+  "version": "0.1.0",
+  "description": "A tiny React-like implementation for learning state, render, reconciliation, and DOM commit workflow.",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./core": "./src/core/index.js"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "example": "python -m http.server 4173 --bind 127.0.0.1",
+    "example:lab": "python -m http.server 4173 --bind 127.0.0.1",
+    "example:tic-tac-toe": "python -m http.server 4174 --bind 127.0.0.1",
+    "check": "node --check src/index.js && node --check src/core/index.js && node --check examples/lab/src/main.js && node --check examples/tic-tac-toe/src/main.js",
+    "test": "node tests/core.test.js"
+  },
+  "keywords": [
+    "react",
+    "virtual-dom",
+    "simulator",
+    "learning",
+    "frontend"
+  ],
+  "license": "MIT"
+}
